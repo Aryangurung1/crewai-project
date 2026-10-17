@@ -1,49 +1,54 @@
 """CrewAI tools. Each one wraps deterministic code so the LLM never invents data.
 
-The chart is computed once by Ganita and kept in SESSION, so Shastra only has
-to pick a topic: it cannot pass a garbled chart to the rule engine.
+Every consultation gets its own `state` dict (see new_state), shared by its tools and
+guardrails, so concurrent readings never see each other's charts. The birth details
+are put into state by code, so Ganita's tool takes no arguments: the LLM cannot
+mistype a date or a coordinate on the way to the ephemeris.
 """
 
 import json
-from datetime import datetime
-from pathlib import Path
+from typing import Any
 
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field
 
 from astro.ganita import compute_chart
-from astro.shastra import TOPICS, match_rules
+from astro.shastra import TOPICS, evidence_strength, match_rules
+from store import ledger_for
 
-LEDGER_PATH = Path(__file__).resolve().parent / "data" / "ledger.json"
 
-# Shared state for one consultation. main.py resets it before each run.
-SESSION: dict = {"chart": None, "matched_rule_ids": set()}
+def new_state(birth: dict, language: str = "English") -> dict:
+    """birth: date, time, latitude, longitude, timezone."""
+    return {"birth": birth, "language": language, "chart": None,
+            "matched_rule_ids": set(), "matches": {}, "strength": {}}
+
+
+class _StateTool(BaseTool):
+    state: Any = Field(default=None, exclude=True)
 
 
 # --- Ganita -----------------------------------------------------------------
 
-class ChartInput(BaseModel):
-    date: str = Field(..., description="Birth date as YYYY-MM-DD")
-    time: str = Field(..., description="Local birth time as HH:MM (24h)")
-    latitude: float = Field(..., description="Birth place latitude")
-    longitude: float = Field(..., description="Birth place longitude")
-    timezone: str = Field(..., description="IANA timezone, e.g. Asia/Kathmandu")
+class NoInput(BaseModel):
+    pass
 
 
-class ChartCalculatorTool(BaseTool):
+class ChartCalculatorTool(_StateTool):
     name: str = "chart_calculator"
     description: str = (
-        "Computes the sidereal (Lahiri) birth chart with Swiss Ephemeris: lagna, "
-        "planet signs/houses/dignities, Moon nakshatra and running Vimshottari dasha."
+        "Computes this person's sidereal (Lahiri) birth chart with Swiss Ephemeris from their "
+        "verified birth details: lagna, planet signs/houses/dignities, Moon nakshatra and running "
+        "Vimshottari dasha. Takes no arguments."
     )
-    args_schema: type[BaseModel] = ChartInput
+    args_schema: type[BaseModel] = NoInput
 
-    def _run(self, date: str, time: str, latitude: float, longitude: float, timezone: str) -> str:
+    def _run(self, **_) -> str:
+        b = self.state["birth"]
         try:
-            chart = compute_chart(date, time, latitude, longitude, timezone)
+            chart = compute_chart(b["date"], b["time"], b["latitude"], b["longitude"], b["timezone"])
         except Exception as exc:  # bad date/time/timezone: tell the agent, don't crash
-            return f"ERROR: could not compute chart ({exc}). Check the input format."
-        SESSION["chart"] = chart
+            return f"ERROR: could not compute chart ({exc})."
+        self.state["chart"] = chart
         return json.dumps(chart, indent=1)
 
 
@@ -53,57 +58,41 @@ class RuleInput(BaseModel):
     topic: str = Field(..., description=f"One of: {', '.join(TOPICS)}")
 
 
-class RuleLookupTool(BaseTool):
+class RuleLookupTool(_StateTool):
     name: str = "rule_lookup"
     description: str = (
-        "Matches the computed chart against the classical rule library for one topic. "
-        "Returns rule IDs, readings and the chart evidence for each match."
+        "Matches the computed chart against the classical rule library for one topic. Returns "
+        "each matched rule (ID, plain label, tone, reading, how common it is, chart evidence) and "
+        "an evidence strength ranked against a population of random charts."
     )
     args_schema: type[BaseModel] = RuleInput
 
     def _run(self, topic: str) -> str:
-        chart = SESSION["chart"]
+        chart = self.state["chart"]
         if chart is None:
             return "ERROR: no chart computed yet. The chart must be calculated first."
         topic = topic.strip().lower()
-        matches = match_rules(chart, topic)
-        SESSION["matched_rule_ids"].update(m["rule_id"] for m in matches)
-        strength = "strong" if len(matches) >= 3 else "moderate" if len(matches) == 2 else "limited"
-        return json.dumps({"topic": topic, "evidence_strength": strength, "matches": matches}, indent=1)
+        matches = match_rules(chart, topic, self.state["language"])
+        strength = evidence_strength(chart, topic)
+        self.state["matched_rule_ids"].update(m["rule_id"] for m in matches)
+        self.state["matches"].update({m["rule_id"]: m for m in matches})
+        self.state["strength"][topic] = strength
+        for_writer = [  # copies, so the UI keeps the numeric share
+            {**m, "how_common": f"fits about {round(m['how_common'] * 100)}% of people"}
+            if m["how_common"] is not None else m
+            for m in matches
+        ]
+        return json.dumps({"topic": topic, "evidence_strength": strength, "matches": for_writer},
+                          indent=1, ensure_ascii=False)
 
 
 # --- Smriti -----------------------------------------------------------------
-
-def read_ledger() -> list[dict]:
-    if not LEDGER_PATH.exists():
-        return []
-    return json.loads(LEDGER_PATH.read_text())
-
-
-def write_ledger(entries: list[dict]) -> None:
-    LEDGER_PATH.write_text(json.dumps(entries, indent=2, ensure_ascii=False))
-
-
-def append_prediction(name: str, question: str, answer: str, rule_ids: list[str]) -> None:
-    """Called by code after the Guardian approves, never by an agent."""
-    entries = read_ledger()
-    entries.append({
-        "id": len(entries) + 1,
-        "timestamp": datetime.now().isoformat(timespec="seconds"),
-        "name": name,
-        "question": question,
-        "answer": answer,
-        "rule_ids": sorted(rule_ids),
-        "outcome": None,  # filled in later: "happened" / "did_not_happen"
-    })
-    write_ledger(entries)
-
 
 class MemoryInput(BaseModel):
     name: str = Field(..., description="The person's name exactly as given")
 
 
-class LedgerRecallTool(BaseTool):
+class LedgerRecallTool(_StateTool):
     name: str = "ledger_recall"
     description: str = (
         "Returns this person's past questions, past answers and recorded outcomes "
@@ -112,7 +101,7 @@ class LedgerRecallTool(BaseTool):
     args_schema: type[BaseModel] = MemoryInput
 
     def _run(self, name: str) -> str:
-        mine = [e for e in read_ledger() if e["name"].lower() == name.strip().lower()]
+        mine = ledger_for(name)
         if not mine:
             return "No past consultations for this person. This is their first visit."
         return json.dumps(mine[-5:], indent=1, ensure_ascii=False)

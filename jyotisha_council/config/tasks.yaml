@@ -1,9 +1,8 @@
 calculate_chart:
   agent: ganita
   description: >
-    Call chart_calculator once with exactly these birth details:
-    date={date}, time={time}, latitude={latitude}, longitude={longitude}, timezone={timezone}.
-    Then summarise the chart for the council.
+    Call chart_calculator once. It takes no arguments: it reads this person's
+    verified birth details directly. Then summarise the chart for the council.
   expected_output: >
     A short summary: lagna, Moon sign, nakshatra, running mahadasha and antardasha
     with end dates, and any exalted or debilitated planets.
@@ -19,8 +18,9 @@ find_rules:
     (e.g. a job abroad is career AND travel). If fewer than 2 rules match in total,
     also call it with "general".
   expected_output: >
-    The topic(s) used, the evidence_strength, and a bullet list of every matched rule:
-    rule ID, rule name, reading, and its chart evidence.
+    The topic(s) used, the evidence_strength (strength, percentile and explanation),
+    and a bullet list of every matched rule: rule ID, label, tone (supportive or caution),
+    reading, how common it is, and its chart evidence.
     End with a line "HANDOFF to Parashar:" saying which rules matter most for the question.
 
 recall_memory:
@@ -38,14 +38,24 @@ draft_answer:
   description: >
     Write the answer for {name} to the question: "{question}".
     Use only the findings handed to you by Ganita, Shastra and Smriti.
-    Reply in {language}. Keep rule IDs, planet and house names in English.
+    Reply in {language}. Keep rule IDs exactly as given (e.g. [R-CAR-01]). Write planet,
+    house and period names in {language}, adding the English term in brackets once if helpful.
   expected_output: >
-    Under 250 words, in this structure:
-    1. A direct, balanced answer in 2-3 sentences.
-    2. "Why (Evidence Mode):" bullets, each ending with its rule ID in brackets, e.g. [R-CAR-01].
-    3. "Timing:" what the running dasha suggests and until when.
-    4. "Confidence:" the evidence_strength from Shastra and one sentence on why.
-    5. One practical, free suggestion (reflection, routine or action), never a paid remedy.
+    Under 250 words, written for someone who knows nothing about astrology:
+    explain any term you use (dasha, lagna, house, nakshatra) in a few plain words.
+    Use exactly these five section headings, each on its own line, in the reply language:
+      English:  Direct answer: | Why (Evidence Mode): | Timing: | Confidence: | Practical suggestion:
+      Nepali:   सीधा उत्तर: | किन (प्रमाण): | समय: | विश्वास स्तर: | व्यावहारिक सुझाव:
+      Japanese: 結論: | 根拠（エビデンス）: | タイミング: | 確信度: | 実践的なアドバイス:
+    1. Direct answer: a balanced answer in 2-3 sentences.
+    2. Why: bullets, each one claim ending with exactly one rule ID in brackets, e.g. [R-CAR-01].
+    3. Timing: what the running dasha (life period) suggests and until when.
+    4. Confidence: Shastra's evidence_strength and its explanation, in plain words, no
+       rule IDs. If the strongest-sounding rules fit most people, say so honestly.
+    5. Practical suggestion: one free suggestion (reflection, routine or action), never a paid remedy.
+    Never group rule IDs together or write "Supported by ..." lists, and never put
+    rule IDs in the direct answer. Give caution-tone rules the same weight as
+    supportive ones, so the answer is balanced rather than only encouraging.
     If Smriti found history, mention it briefly.
 
 final_review:
