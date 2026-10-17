@@ -14,7 +14,11 @@ from pathlib import Path
 
 from cryptography.fernet import Fernet, InvalidToken
 
-DATA = Path(__file__).resolve().parent / "data"
+# Where readings, profiles and chats are written. Vercel's code folder is read-only, so there
+# they go to /tmp, which is temporary: it resets whenever Vercel starts a fresh instance.
+DATA = Path(os.getenv("JYOTISHA_DATA_DIR")
+            or ("/tmp/jyotisha" if os.getenv("VERCEL") else Path(__file__).resolve().parent / "data"))
+DATA.mkdir(parents=True, exist_ok=True)
 LEDGER_PATH = DATA / "ledger.json"
 PROFILES_PATH = DATA / "profiles.enc"
 KEY_PATH = DATA / ".profile_key"

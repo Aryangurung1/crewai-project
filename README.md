@@ -222,6 +222,24 @@ Get an OpenAI API key at https://platform.openai.com/api-keys and add credit und
 **Settings → Billing** (a ChatGPT Plus subscription does not include API credit).
 A consultation costs a few cents.
 
+## Deploy to Vercel (free Hobby plan)
+
+The repo is ready for Vercel: `vercel.json` builds the React app and serves the FastAPI backend
+as one Python function (`api/index.py`) at `/api/*`, with a 300-second limit (a reading takes
+about 100 seconds).
+
+1. Push this repo to GitHub.
+2. On vercel.com: **Add New → Project → Import** the repo. Keep the defaults (`vercel.json` sets them).
+3. Under **Environment Variables** add `OPENAI_API_KEY` (and optionally `LLM_MODEL`, `MAX_RPM`).
+4. **Deploy.** Open the URL and say hello.
+
+Good to know:
+- **Data is temporary on Vercel.** Readings, saved details and chats are written to `/tmp`, which
+  resets when Vercel starts a fresh instance. Fine for a demo; a database would make it permanent.
+- **The site is public and uses your OpenAI credit.** Set a monthly spending limit at
+  https://platform.openai.com/settings/organization/limits before sharing the link.
+- The first request after a quiet period is slower while the function starts.
+
 ## Configuration
 
 All settings live in `.env` (never commit it; it is in `.gitignore`):
