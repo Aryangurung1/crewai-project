@@ -1,0 +1,209 @@
+{
+  "version": "0.1.0",
+  "note": "Illustrative starter library in the Parashari tradition. Every rule should be reviewed by a qualified astrologer before production use.",
+  "rules": [
+    {
+      "id": "R-GEN-01",
+      "name": "Gaja Kesari Yoga",
+      "topics": ["general", "wealth", "career"],
+      "conditions": [{"type": "planet_from_planet", "planet": "Jupiter", "from": "Moon", "houses": [1, 4, 7, 10]}],
+      "reading": "Jupiter in a kendra from the Moon: good judgement, respect from others and support during difficulties."
+    },
+    {
+      "id": "R-GEN-02",
+      "name": "Strong Lagna lord",
+      "topics": ["general", "career"],
+      "conditions": [{"type": "house_lord_in_house", "house": 1, "houses": [1, 4, 5, 7, 9, 10]}],
+      "reading": "The Lagna lord sits in a kendra or trikona: a resilient sense of self and the ability to steer one's own life."
+    },
+    {
+      "id": "R-GEN-03",
+      "name": "Bhagya lord well placed",
+      "topics": ["general", "wealth", "travel"],
+      "conditions": [{"type": "house_lord_in_house", "house": 9, "houses": [1, 9, 10, 11]}],
+      "reading": "The 9th lord is well placed: fortune, mentors and opportunities tend to arrive through effort and guidance."
+    },
+    {
+      "id": "R-CAR-01",
+      "name": "10th lord in kendra or trikona",
+      "topics": ["career"],
+      "conditions": [{"type": "house_lord_in_house", "house": 10, "houses": [1, 4, 5, 7, 9, 10]}],
+      "reading": "The 10th lord is in a kendra or trikona: a career that can grow steadily and bring recognition."
+    },
+    {
+      "id": "R-CAR-02",
+      "name": "Sun in the 10th house",
+      "topics": ["career"],
+      "conditions": [{"type": "planet_in_house", "planet": "Sun", "houses": [10]}],
+      "reading": "The Sun has directional strength in the 10th: leadership, visibility and comfort with authority."
+    },
+    {
+      "id": "R-CAR-03",
+      "name": "Saturn in the 10th house",
+      "topics": ["career"],
+      "conditions": [{"type": "planet_in_house", "planet": "Saturn", "houses": [10]}],
+      "reading": "Saturn in the 10th: a slower but durable career built on discipline and responsibility."
+    },
+    {
+      "id": "R-CAR-04",
+      "name": "Mercury in Lagna or 10th",
+      "topics": ["career", "education"],
+      "conditions": [{"type": "planet_in_house", "planet": "Mercury", "houses": [1, 10]}],
+      "reading": "Mercury in the 1st or 10th: strength in communication, analysis, trade and technology work."
+    },
+    {
+      "id": "R-CAR-05",
+      "name": "Rahu in an upachaya house",
+      "topics": ["career", "travel"],
+      "conditions": [{"type": "planet_in_house", "planet": "Rahu", "houses": [3, 6, 10, 11]}],
+      "reading": "Rahu in an upachaya house: ambition that grows with time and openness to unconventional or foreign paths."
+    },
+    {
+      "id": "R-MAR-01",
+      "name": "7th lord well placed",
+      "topics": ["marriage"],
+      "conditions": [{"type": "house_lord_in_house", "house": 7, "houses": [1, 4, 5, 7, 9, 10, 11]}],
+      "reading": "The 7th lord is well placed: partnerships are supported and a committed relationship can bring growth."
+    },
+    {
+      "id": "R-MAR-02",
+      "name": "7th lord in a dusthana",
+      "topics": ["marriage"],
+      "conditions": [{"type": "house_lord_in_house", "house": 7, "houses": [6, 8, 12]}],
+      "reading": "The 7th lord is in the 6th, 8th or 12th: partnerships may need extra patience, clear communication and time."
+    },
+    {
+      "id": "R-MAR-03",
+      "name": "Venus dignified",
+      "topics": ["marriage", "general"],
+      "conditions": [{"type": "planet_dignity", "planet": "Venus", "dignity": ["exalted", "own"]}],
+      "reading": "Venus is exalted or in its own sign: warmth, artistic taste and harmony in relationships."
+    },
+    {
+      "id": "R-MAR-04",
+      "name": "Mangal placement (Manglik check)",
+      "topics": ["marriage"],
+      "conditions": [{"type": "planet_in_house", "planet": "Mars", "houses": [1, 2, 4, 7, 8, 12]}],
+      "reading": "Mars is in a house traditionally checked for Manglik status. This is common, often cancelled by other factors, and should be assessed in matching, not feared."
+    },
+    {
+      "id": "R-MAR-05",
+      "name": "Jupiter in the 7th house",
+      "topics": ["marriage"],
+      "conditions": [{"type": "planet_in_house", "planet": "Jupiter", "houses": [7]}],
+      "reading": "Jupiter in the 7th: a wise, supportive partner and partnerships grounded in shared values."
+    },
+    {
+      "id": "R-WEA-01",
+      "name": "Dhana Yoga (2nd and 11th lords)",
+      "topics": ["wealth"],
+      "conditions": [{"type": "house_lord_in_house", "house": 2, "houses": [11]}],
+      "reading": "The 2nd lord sits in the 11th: savings and income support each other when managed well."
+    },
+    {
+      "id": "R-WEA-02",
+      "name": "11th lord in the 2nd",
+      "topics": ["wealth"],
+      "conditions": [{"type": "house_lord_in_house", "house": 11, "houses": [2]}],
+      "reading": "The 11th lord sits in the 2nd: gains tend to turn into accumulated resources."
+    },
+    {
+      "id": "R-WEA-03",
+      "name": "Jupiter in 2nd or 11th",
+      "topics": ["wealth"],
+      "conditions": [{"type": "planet_in_house", "planet": "Jupiter", "houses": [2, 11]}],
+      "reading": "Jupiter in the 2nd or 11th: growth in resources through knowledge, teaching or good advice."
+    },
+    {
+      "id": "R-EDU-01",
+      "name": "5th lord in kendra or trikona",
+      "topics": ["education"],
+      "conditions": [{"type": "house_lord_in_house", "house": 5, "houses": [1, 4, 5, 7, 9, 10]}],
+      "reading": "The 5th lord is well placed: a sharp mind, good learning ability and creative thinking."
+    },
+    {
+      "id": "R-EDU-02",
+      "name": "Mercury dignified",
+      "topics": ["education", "career"],
+      "conditions": [{"type": "planet_dignity", "planet": "Mercury", "dignity": ["exalted", "own"]}],
+      "reading": "Mercury is exalted or in its own sign: quick learning, clear analysis and strong communication."
+    },
+    {
+      "id": "R-TRV-01",
+      "name": "Rahu in the 12th house",
+      "topics": ["travel"],
+      "conditions": [{"type": "planet_in_house", "planet": "Rahu", "houses": [12]}],
+      "reading": "Rahu in the 12th: interest in foreign lands and possible settlement or work abroad."
+    },
+    {
+      "id": "R-TRV-02",
+      "name": "12th lord in 9th or 12th",
+      "topics": ["travel"],
+      "conditions": [{"type": "house_lord_in_house", "house": 12, "houses": [9, 12]}],
+      "reading": "The 12th lord sits in the 9th or 12th: long-distance travel and time abroad are supported."
+    },
+    {
+      "id": "R-DAS-JUP",
+      "name": "Jupiter mahadasha",
+      "topics": ["general", "career", "education", "marriage", "wealth", "travel"],
+      "conditions": [{"type": "mahadasha", "lord": "Jupiter"}],
+      "reading": "Jupiter mahadasha: a period of expansion, learning, mentors and growth in wisdom."
+    },
+    {
+      "id": "R-DAS-SAT",
+      "name": "Saturn mahadasha",
+      "topics": ["general", "career", "education", "marriage", "wealth", "travel"],
+      "conditions": [{"type": "mahadasha", "lord": "Saturn"}],
+      "reading": "Saturn mahadasha: a period that rewards patience, structure and consistent hard work."
+    },
+    {
+      "id": "R-DAS-VEN",
+      "name": "Venus mahadasha",
+      "topics": ["general", "career", "education", "marriage", "wealth", "travel"],
+      "conditions": [{"type": "mahadasha", "lord": "Venus"}],
+      "reading": "Venus mahadasha: a period favouring relationships, creativity, comfort and the arts."
+    },
+    {
+      "id": "R-DAS-RAH",
+      "name": "Rahu mahadasha",
+      "topics": ["general", "career", "education", "marriage", "wealth", "travel"],
+      "conditions": [{"type": "mahadasha", "lord": "Rahu"}],
+      "reading": "Rahu mahadasha: a period of big ambitions, new technology, foreign links and unconventional choices."
+    },
+    {
+      "id": "R-DAS-MER",
+      "name": "Mercury mahadasha",
+      "topics": ["general", "career", "education", "marriage", "wealth", "travel"],
+      "conditions": [{"type": "mahadasha", "lord": "Mercury"}],
+      "reading": "Mercury mahadasha: a period for study, business, writing and building skills."
+    },
+    {
+      "id": "R-DAS-SUN",
+      "name": "Sun mahadasha",
+      "topics": ["general", "career", "education", "marriage", "wealth", "travel"],
+      "conditions": [{"type": "mahadasha", "lord": "Sun"}],
+      "reading": "Sun mahadasha: a period of visibility, leadership and recognition from authority."
+    },
+    {
+      "id": "R-DAS-MON",
+      "name": "Moon mahadasha",
+      "topics": ["general", "career", "education", "marriage", "wealth", "travel"],
+      "conditions": [{"type": "mahadasha", "lord": "Moon"}],
+      "reading": "Moon mahadasha: a period centred on home, family, emotions and public connection."
+    },
+    {
+      "id": "R-DAS-MAR",
+      "name": "Mars mahadasha",
+      "topics": ["general", "career", "education", "marriage", "wealth", "travel"],
+      "conditions": [{"type": "mahadasha", "lord": "Mars"}],
+      "reading": "Mars mahadasha: a period of energy, courage, competition and decisive action."
+    },
+    {
+      "id": "R-DAS-KET",
+      "name": "Ketu mahadasha",
+      "topics": ["general", "career", "education", "marriage", "wealth", "travel"],
+      "conditions": [{"type": "mahadasha", "lord": "Ketu"}],
+      "reading": "Ketu mahadasha: a period of introspection, specialised skills and letting go of what no longer fits."
+    }
+  ]
+}

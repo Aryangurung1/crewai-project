@@ -1,0 +1,60 @@
+calculate_chart:
+  agent: ganita
+  description: >
+    Call chart_calculator once with exactly these birth details:
+    date={date}, time={time}, latitude={latitude}, longitude={longitude}, timezone={timezone}.
+    Then summarise the chart for the council.
+  expected_output: >
+    A short summary: lagna, Moon sign, nakshatra, running mahadasha and antardasha
+    with end dates, and any exalted or debilitated planets.
+    End with a line "HANDOFF to Shastra:" naming the chart facts most relevant to
+    the question "{question}".
+
+find_rules:
+  agent: shastra
+  description: >
+    The person asks: "{question}".
+    Topics: general, career, marriage, wealth, education, travel.
+    Call rule_lookup once for each topic the question touches, at most 2
+    (e.g. a job abroad is career AND travel). If fewer than 2 rules match in total,
+    also call it with "general".
+  expected_output: >
+    The topic(s) used, the evidence_strength, and a bullet list of every matched rule:
+    rule ID, rule name, reading, and its chart evidence.
+    End with a line "HANDOFF to Parashar:" saying which rules matter most for the question.
+
+recall_memory:
+  agent: smriti
+  description: >
+    Call ledger_recall for the person named "{name}". Compare their history with the
+    current question: "{question}".
+  expected_output: >
+    Either "First visit, no history." or a short list of relevant past questions,
+    what was said, and any recorded outcomes.
+    End with a line "HANDOFF to Parashar:" saying how the history should shape the answer.
+
+draft_answer:
+  agent: parashar
+  description: >
+    Write the answer for {name} to the question: "{question}".
+    Use only the findings handed to you by Ganita, Shastra and Smriti.
+    Reply in {language}. Keep rule IDs, planet and house names in English.
+  expected_output: >
+    Under 250 words, in this structure:
+    1. A direct, balanced answer in 2-3 sentences.
+    2. "Why (Evidence Mode):" bullets, each ending with its rule ID in brackets, e.g. [R-CAR-01].
+    3. "Timing:" what the running dasha suggests and until when.
+    4. "Confidence:" the evidence_strength from Shastra and one sentence on why.
+    5. One practical, free suggestion (reflection, routine or action), never a paid remedy.
+    If Smriti found history, mention it briefly.
+
+final_review:
+  agent: guardian
+  description: >
+    Review Parashar's draft for {name}. Rewrite only what breaks these rules:
+    no predictions about death, illness, accidents, divorce or legal outcomes;
+    no fear-mongering; nothing stated as certain or guaranteed; no paid remedies or prices;
+    the tone respects free will (a view, not a command).
+    Keep the structure, the language ({language}) and every rule ID citation.
+  expected_output: >
+    The final answer only, ready to show the user. No review notes or commentary.
